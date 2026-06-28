@@ -1,5 +1,6 @@
 // 职责：把子弹追踪逻辑绑定到 Unity 对象，并在命中时造成伤害。
 using UnityEngine;
+using TowerDefense.Core;
 using EnemyBehaviour = TowerDefense.Enemy.Enemy;
 
 namespace TowerDefense.Tower
@@ -30,6 +31,12 @@ namespace TowerDefense.Tower
 
         private void Update()
         {
+            if (LevelManager.Instance != null && LevelManager.Instance.IsGameOver)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             if (mover == null)
             {
                 return;
