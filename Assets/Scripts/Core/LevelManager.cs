@@ -27,29 +27,15 @@ namespace TowerDefense.Core
 
         public static LevelManager Instance { get; private set; }
 
-        public int Gold
-        {
-            get { return goldSystem.Balance; }
-        }
+        public int Gold { get { return goldSystem.Balance; } }
 
-        public int Health
-        {
-            get { return healthSystem.CurrentHealth; }
-        }
+        public int Health { get { return healthSystem.CurrentHealth; } }
 
         public bool IsGameOver { get; private set; }
 
-        public GoldSystem GoldSystem
-        {
-            get { return goldSystem; }
-        }
-
         public WaveSpawner WaveSpawner { get; private set; }
 
-        public GridSystem GridSystem
-        {
-            get { return gridSystem; }
-        }
+        public GridSystem GridSystem { get { return gridSystem; } }
 
         private void Awake()
         {
@@ -80,8 +66,22 @@ namespace TowerDefense.Core
             victoryChecker.Evaluate(WaveSpawner.IsCompleted, aliveEnemies);
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         public void RegisterEnemy(EnemyBehaviour enemy)
         {
+            if (IsGameOver)
+            {
+                Destroy(enemy.gameObject);
+                return;
+            }
+
             aliveEnemies++;
             enemy.ReachedEnd += HandleEnemyReachedEnd;
             enemy.Killed += HandleEnemyKilled;
@@ -89,6 +89,11 @@ namespace TowerDefense.Core
 
         public bool TryBuild(float x, float y, TowerData data)
         {
+            if (IsGameOver)
+            {
+                return false;
+            }
+
             bool built = buildService.TryBuild(x, y, data.Cost);
             if (built)
             {
@@ -105,9 +110,31 @@ namespace TowerDefense.Core
             RaiseGoldChanged();
         }
 
+        public bool TryUpgradeTower(TowerInstance tower, TowerUpgrade towerUpgrade)
+        {
+            if (IsGameOver)
+            {
+                return false;
+            }
+
+            bool upgraded = towerUpgrade.Upgrade(tower, goldSystem);
+            if (upgraded)
+            {
+                RaiseGoldChanged();
+            }
+
+            return upgraded;
+        }
+
         private void HandleEnemyReachedEnd(EnemyBehaviour enemy)
         {
             aliveEnemies = Math.Max(0, aliveEnemies - 1);
+            if (IsGameOver)
+            {
+                Destroy(enemy.gameObject);
+                return;
+            }
+
             healthSystem.ApplyDamage(endpointDamage);
             RaiseHealthChanged();
             Destroy(enemy.gameObject);
@@ -126,6 +153,11 @@ namespace TowerDefense.Core
 
         private void HandleGameOver()
         {
+            if (IsGameOver)
+            {
+                return;
+            }
+
             IsGameOver = true;
             if (GameOver != null)
             {
@@ -135,6 +167,12 @@ namespace TowerDefense.Core
 
         private void HandleVictory()
         {
+            if (IsGameOver)
+            {
+                return;
+            }
+
+            IsGameOver = true;
             if (Victory != null)
             {
                 Victory.Invoke();
