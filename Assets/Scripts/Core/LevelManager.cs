@@ -54,9 +54,10 @@ namespace TowerDefense.Core
         private void Awake()
         {
             Instance = this;
+            InitializeSystems();
         }
 
-        private void Start()
+        private void InitializeSystems()
         {
             goldSystem = new GoldSystem(initialGold);
             healthSystem = new HealthSystem(initialHealth);
