@@ -1,15 +1,14 @@
-```markdown
 # CarrotGuard — 从零构建 Unity 2D 塔防手游原型
 
 ## 0. 项目宪法（任何阶段都不可违反）
 
 ### 0.1 Git 工作流（Worktree 纯净原则）
-- main 分支永远保持可编译、全测试通过的状态，禁止直接 push
+- master 分支永远保持可编译、全测试通过的状态，禁止直接 push
 - 每个 Phase 创建独立开发分支：`phase/0-skeleton`、`phase/1-data-model`、`phase/2-movement` ...
 - 在开发分支上按 Step 逐步 commit（Red → Green → Refactor）
-- 一个 Phase 全部 Step 完成后，squash merge 回 main，merge commit message 为 `milestone: Phase N — <描述>`
+- 一个 Phase 全部 Step 完成后，squash merge 回 master，merge commit message 为 `milestone: Phase N — <描述>`
 - merge 前确认：全量测试通过 + 无编译警告 + git status 干净
-- merge 后删除开发分支，再从最新 main 切出下一个 Phase 分支
+- merge 后删除开发分支，再从最新 master 切出下一个 Phase 分支
 - 禁止跨 Phase 分支并行开发
 
 ### 0.2 Executable Boundary（可执行边界）
@@ -62,26 +61,22 @@
 
 ## 2. TDD 迭代计划
 
-严格按顺序执行。每个 Phase 在独立分支上开发，完成后 squash merge 回 main。
+严格按顺序执行。每个 Phase 在独立分支上开发，完成后 squash merge 回 master。
 
 ### Phase 0: 骨架
 **分支：`phase/0-skeleton`**
-```
 
-feat(build): 初始化目录结构和 asmdef
+commit: `feat(build): 初始化目录结构和 asmdef`
 
-```
 创建：
 - Assets/Scripts/{Enemy,Tower,Core,UI}/
 - Assets/Tests/EditMode/
 - Assembly Definition: TowerDefense.asmdef, TowerDefense.Tests.asmdef（引用 TowerDefense + NUnit）
-```
 
-→ squash merge main: milestone: Phase 0 — 项目骨架
+→ squash merge master: `milestone: Phase 0 — 项目骨架`
 
-```
 ### Phase 1: 数据模型（纯 C#，零 MonoBehaviour）
-**分支：`phase/1-data-model`**（从最新 main 切出）
+**分支：`phase/1-data-model`**（从最新 master 切出）
 
 | Step | Red | Green |
 |------|-----|-------|
@@ -90,11 +85,9 @@ feat(build): 初始化目录结构和 asmdef
 | 1.3 | `test(core): WaveConfig — 3 波数据解析正确` | `feat(core): WaveConfig` |
 | 1.4 | `test(tower): TowerData — 两种塔属性读取正确` | `feat(tower): TowerData` |
 | 1.5 | `test(enemy): DamageCalculator — 扣血正确；击杀时标记死亡并返回金币奖励` | `feat(enemy): DamageCalculator` |
-```
 
-→ squash merge main: milestone: Phase 1 — 数据模型层
+→ squash merge master: `milestone: Phase 1 — 数据模型层`
 
-```
 ### Phase 2: 移动系统
 **分支：`phase/2-movement`**
 
@@ -102,11 +95,9 @@ feat(build): 初始化目录结构和 asmdef
 |------|-----|-------|
 | 2.1 | `test(enemy): PathFollower — 沿路径点序列移动；到终点触发 OnReachedEnd` | `feat(enemy): Waypoint + PathFollower` |
 | 2.2 | `test(enemy): PathFollower — 速度与 deltaTime 成正比` | `refactor(enemy): PathFollower 提取速度参数` |
-```
 
-→ squash merge main: milestone: Phase 2 — 移动系统
+→ squash merge master: `milestone: Phase 2 — 移动系统`
 
-```
 ### Phase 3: 瞄准与射击
 **分支：`phase/3-combat`**
 
@@ -115,11 +106,9 @@ feat(build): 初始化目录结构和 asmdef
 | 3.1 | `test(tower): TargetSelector — 选射程内最近；无目标返回 null；目标出射程后丢失` | `feat(tower): TargetSelector` |
 | 3.2 | `test(tower): FireController — 冷却结束触发 OnFire；冷却中不触发` | `feat(tower): FireController` |
 | 3.3 | `test(tower): BulletMover — 追踪目标；目标消失时标记自毁` | `feat(tower): BulletMover` |
-```
 
-→ squash merge main: milestone: Phase 3 — 瞄准与射击系统
+→ squash merge master: `milestone: Phase 3 — 瞄准与射击系统`
 
-```
 ### Phase 4: 刷怪系统
 **分支：`phase/4-spawner`**
 
@@ -127,11 +116,9 @@ feat(build): 初始化目录结构和 asmdef
 |------|-----|-------|
 | 4.1 | `test(enemy): WaveSpawner — 按配置依次产出；波间有间隔` | `feat(enemy): WaveSpawner` |
 | 4.2 | `test(core): VictoryChecker — 全波次完成+存活为零→触发 OnVictory` | `feat(core): VictoryChecker` |
-```
 
-→ squash merge main: milestone: Phase 4 — 刷怪系统
+→ squash merge master: `milestone: Phase 4 — 刷怪系统`
 
-```
 ### Phase 5: 建造系统
 **分支：`phase/5-build`**
 
@@ -140,64 +127,41 @@ feat(build): 初始化目录结构和 asmdef
 | 5.1 | `test(core): GridSystem — 坐标对齐整数；查询占用状态正确` | `feat(core): GridSystem` |
 | 5.2 | `test(core): BuildService — 金币够+格子空→成功扣款；否则失败` | `feat(core): BuildService` |
 | 5.3 | `test(tower): TowerUpgrade — 升级扣款提升属性；出售返还 50%` | `feat(tower): TowerUpgrade` |
-```
 
-→ squash merge main: milestone: Phase 5 — 建造系统
+→ squash merge master: `milestone: Phase 5 — 建造系统`
 
-```
 ### Phase 6: Unity 集成
 **分支：`phase/6-integration`**
 
 逐步将纯逻辑绑定到 Unity 组件，每步一个 commit：
-```
+- `feat(enemy): Enemy MonoBehaviour — 绑定 PathFollower + DamageCalculator`
+- `feat(tower): Tower MonoBehaviour — 绑定 TargetSelector + FireController`
+- `feat(tower): Bullet MonoBehaviour — 绑定 BulletMover`
+- `feat(core): LevelManager 单例 — 持有 GoldSystem + HealthSystem + WaveSpawner + VictoryChecker`
+- `feat(enemy): EnemySpawner MonoBehaviour — 绑定 WaveSpawner`
 
-feat(enemy): Enemy MonoBehaviour — 绑定 PathFollower + DamageCalculator
- feat(tower): Tower MonoBehaviour — 绑定 TargetSelector + FireController
- feat(tower): Bullet MonoBehaviour — 绑定 BulletMover
- feat(core): LevelManager 单例 — 持有 GoldSystem + HealthSystem + WaveSpawner + VictoryChecker
- feat(enemy): EnemySpawner MonoBehaviour — 绑定 WaveSpawner
+→ squash merge master: `milestone: Phase 6 — Unity 集成`
 
-```
-
-```
-
-→ squash merge main: milestone: Phase 6 — Unity 集成
-
-```
 ### Phase 7: UI 与交互
 **分支：`phase/7-ui`**
 
 每步一个 commit：
-```
+- `feat(ui): HUD — 实时显示金币和生命值`
+- `feat(ui): 点击空白格子弹出炮塔选择菜单`
+- `feat(ui): 点击已有炮塔弹出升级/出售面板`
+- `feat(ui): 防误触 EventSystem.IsPointerOverGameObject`
+- `feat(ui): Game Over / Victory 界面 + 重新开始`
+- `feat(ui): 开始界面 → 点击进入关卡`
 
-feat(ui): HUD — 实时显示金币和生命值
- feat(ui): 点击空白格子弹出炮塔选择菜单
- feat(ui): 点击已有炮塔弹出升级/出售面板
- feat(ui): 防误触 EventSystem.IsPointerOverGameObject
- feat(ui): Game Over / Victory 界面 + 重新开始
- feat(ui): 开始界面 → 点击进入关卡
+→ squash merge master: `milestone: Phase 7 — UI 与交互`
 
-```
-
-```
-
-→ squash merge main: milestone: Phase 7 — UI 与交互
-
-```
 ### Phase 8: 收尾
 **分支：`phase/8-docs`**
-```
+- `docs(build): README.md — 场景搭建指南`
+- `refactor(build): 全量测试通过，最终清理`
 
-docs(build): README.md — 场景搭建指南
- refactor(build): 全量测试通过，最终清理
+→ squash merge master: `milestone: Phase 8 — 收尾`
 
-```
-
-```
-
-→ squash merge main: milestone: Phase 8 — 收尾
-
-```
 ---
 
 ## 3. 工程约束
@@ -207,10 +171,7 @@ docs(build): README.md — 场景搭建指南
 - 每个文件顶部中文注释说明职责
 - 不确定的地方注释 `// 假设：xxx`
 - 不要问任何问题，严格按 Phase/Step 顺序执行
-- 每个 Phase 开始前：`git checkout main && git pull && git checkout -b phase/N-xxx`
-- 每个 Phase 结束后：全量测试通过 → `git checkout main && git merge --squash phase/N-xxx && git commit -m "milestone: Phase N — 描述"` → `git branch -d phase/N-xxx`
+- 每个 Phase 开始前：`git checkout master && git pull && git checkout -b phase/N-xxx`
+- 每个 Phase 结束后：全量测试通过 → `git checkout master && git merge --squash phase/N-xxx && git commit -m "milestone: Phase N — 描述"` → `git branch -d phase/N-xxx`
 - 如果某个 Step 的测试写不出来（比如纯 UI），在 commit message 中写明 `[无测试] 手动验证：xxx`
 - 禁止在任何 Step 中预埋"将来可能用到"的代码
-```
-
-加了 §0.1 Git 工作流规则和每个 Phase 首尾的分支操作指令。核心原则：main 永远干净，开发全在 phase 分支上，squash merge 保证 main 的 git log 只有 milestone 级别的记录。
