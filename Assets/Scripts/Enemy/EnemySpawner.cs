@@ -17,6 +17,17 @@ namespace TowerDefense.Enemy
             TrySubscribe();
         }
 
+        private void OnDisable()
+        {
+            if (!subscribed || LevelManager.Instance == null || LevelManager.Instance.WaveSpawner == null)
+            {
+                return;
+            }
+
+            LevelManager.Instance.WaveSpawner.OnSpawn -= SpawnEnemy;
+            subscribed = false;
+        }
+
         private void TrySubscribe()
         {
             if (subscribed || LevelManager.Instance == null || LevelManager.Instance.WaveSpawner == null)
@@ -30,7 +41,7 @@ namespace TowerDefense.Enemy
 
         private void SpawnEnemy(int waveIndex)
         {
-            if (enemyPrefab == null || waypoints.Length == 0)
+            if (enemyPrefab == null || waypoints.Length < 2)
             {
                 return;
             }

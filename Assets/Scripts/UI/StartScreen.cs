@@ -18,7 +18,7 @@ namespace TowerDefense.UI
 
             if (levelRoot != null)
             {
-                levelRoot.SetActive(true);
+                levelRoot.SetActive(false);
             }
         }
 
@@ -27,6 +27,11 @@ namespace TowerDefense.UI
             if (startPanel != null)
             {
                 startPanel.SetActive(false);
+            }
+
+            if (levelRoot != null)
+            {
+                levelRoot.SetActive(true);
             }
 
             Time.timeScale = 1f;

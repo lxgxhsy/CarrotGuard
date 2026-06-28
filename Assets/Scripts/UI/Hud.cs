@@ -10,32 +10,45 @@ namespace TowerDefense.UI
         [SerializeField] private Text goldText;
         [SerializeField] private Text healthText;
 
+        private bool subscribed;
+
         private void OnEnable()
         {
             Subscribe();
             Refresh();
         }
 
+        private void Update()
+        {
+            if (!subscribed)
+            {
+                Subscribe();
+                Refresh();
+            }
+        }
+
         private void OnDisable()
         {
-            if (LevelManager.Instance == null)
+            if (!subscribed || LevelManager.Instance == null)
             {
                 return;
             }
 
             LevelManager.Instance.GoldChanged -= Refresh;
             LevelManager.Instance.HealthChanged -= Refresh;
+            subscribed = false;
         }
 
         private void Subscribe()
         {
-            if (LevelManager.Instance == null)
+            if (subscribed || LevelManager.Instance == null)
             {
                 return;
             }
 
             LevelManager.Instance.GoldChanged += Refresh;
             LevelManager.Instance.HealthChanged += Refresh;
+            subscribed = true;
         }
 
         public void Refresh()

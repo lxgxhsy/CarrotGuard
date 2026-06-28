@@ -1,6 +1,7 @@
 // 职责：把炮塔目标选择和开火冷却绑定到 Unity 对象。
 using System;
 using UnityEngine;
+using TowerDefense.Core;
 using EnemyBehaviour = TowerDefense.Enemy.Enemy;
 
 namespace TowerDefense.Tower
@@ -33,6 +34,11 @@ namespace TowerDefense.Tower
 
         private void Update()
         {
+            if (LevelManager.Instance != null && LevelManager.Instance.IsGameOver)
+            {
+                return;
+            }
+
             currentTarget = SelectTarget();
             fireController.Tick(Time.deltaTime, currentTarget != null);
         }
