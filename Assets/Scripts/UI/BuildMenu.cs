@@ -64,14 +64,7 @@ namespace TowerDefense.UI
                 return;
             }
 
-            bool upgraded = towerUpgrade.Upgrade(
-                selectedTower.Instance,
-                LevelManager.Instance.GoldSystem);
-            if (upgraded)
-            {
-                LevelManager.Instance.AwardGold(0);
-            }
-
+            LevelManager.Instance.TryUpgradeTower(selectedTower.Instance, towerUpgrade);
             HideMenus();
         }
 
