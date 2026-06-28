@@ -1,6 +1,7 @@
 // 职责：把敌人的路径移动和受伤计算绑定到 Unity 对象。
 using System;
 using UnityEngine;
+using TowerDefense.Core;
 
 namespace TowerDefense.Enemy
 {
@@ -13,6 +14,7 @@ namespace TowerDefense.Enemy
 
         private PathFollower pathFollower;
         private EnemyState state;
+        private bool hasLeftLevel;
 
         public event Action<Enemy> ReachedEnd;
         public event Action<Enemy, int> Killed;
@@ -36,7 +38,7 @@ namespace TowerDefense.Enemy
 
         private void Update()
         {
-            if (pathFollower == null || IsDead)
+            if (pathFollower == null || IsDead || hasLeftLevel || IsLevelEnded())
             {
                 return;
             }
@@ -47,6 +49,11 @@ namespace TowerDefense.Enemy
 
         public void TakeDamage(int damage)
         {
+            if (hasLeftLevel || state == null || IsDead || IsLevelEnded())
+            {
+                return;
+            }
+
             int reward = DamageCalculator.ApplyDamage(state, damage);
             if (reward <= 0)
             {
@@ -73,8 +80,14 @@ namespace TowerDefense.Enemy
             return points;
         }
 
+        private static bool IsLevelEnded()
+        {
+            return LevelManager.Instance != null && LevelManager.Instance.IsGameOver;
+        }
+
         private void HandleReachedEnd()
         {
+            hasLeftLevel = true;
             if (ReachedEnd != null)
             {
                 ReachedEnd.Invoke(this);
